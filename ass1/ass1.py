@@ -26,15 +26,17 @@ def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
     print(r.sum())
     return inv_cdf(r)
 
-n_samples = 10000   # nbr of sample to generate
+n_samples = 400000   # nbr of sample to generate
 n_bins = 1000
 samples = inverse_transform_sampling(smooth_raccoon, n_bins, n_samples)
 
 ###### draw samples in raccoon image
 sampled_raccoon = np.zeros(smooth_raccoon.shape)
 
-for sample in samples:
-    sampled_raccoon += np.where(smooth_raccoon==int(sample) , smooth_raccoon, 0)
+for sample in samples.astype(int):
+#print(samples.astype(int))
+#print(smooth_raccoon)
+    sampled_raccoon += np.where(smooth_raccoon==sample , smooth_raccoon, 0)
 
 
 ####### Parzen Window Estimation
