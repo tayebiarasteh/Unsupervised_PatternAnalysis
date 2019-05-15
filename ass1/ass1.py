@@ -6,42 +6,35 @@ import scipy.interpolate as interpolate
 
 
 
-face = scipy.misc.face(gray=True)
-print(face)
+raccoon = scipy.misc.face(gray=True)
 
 ####### gaussian filter
 
-print(face.shape)
-y = nd.gaussian_filter(face, sigma=3)
-print(y)
+smooth_raccoon = nd.gaussian_filter(raccoon, sigma=3)
+#print(y.sum())
 
 
 ##### inverse transformation sampling
 
-n_samples = 10000   # nbr of sample to generate
-
-face = face / face.sum()  # normalize CDF
-print(face)
-y = np.cumsum(y)    # generate CDF
-print(y.shape)
-print(y.sum())
-'''
-r = np.random.rand(n_samples)   # random samples from uniform distribution
-
-inv_cdf = interpolate.interp1d(y, np.arange(y.shape[0]))
-sample = inv_cdf(r)
-
-np.empty([face.shape[0], face.shape[1]])
-
-'''
-
-def inverse_transform_sampling(data, n_bins=40, n_samples=1000):
-    hist, bin_edges = np.histogram(data, bins=n_bins, density=True)
+def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
+    hist, bin_edges = np.histogram(data, bins=n_bins, density=True) # generate histogram
     cum_values = np.zeros(bin_edges.shape)  # future CDF
     cum_values[1:] = np.cumsum(hist*np.diff(bin_edges)) # generate CDF
+    print(cum_values.sum())
     inv_cdf = interpolate.interp1d(cum_values, bin_edges)   # inverse of the CDF
     r = np.random.rand(n_samples)   # random samples from uniform distribution
+    print(r.sum())
     return inv_cdf(r)
+
+n_samples = 10000   # nbr of sample to generate
+n_bins = 1000
+samples = inverse_transform_sampling(smooth_raccoon, n_bins, n_samples)
+
+###### draw samples in raccoon image
+sampled_raccoon = np.zeros(smooth_raccoon.shape)
+
+for sample in samples:
+    sampled_raccoon += np.where(smooth_raccoon==int(sample) , smooth_raccoon, 0)
 
 
 ####### Parzen Window Estimation
@@ -67,6 +60,7 @@ def parzen_estimation(x, h):
 
 
 ####### plot the image
+to_plot = sampled_raccoon
 plt.gray()
-plt.imshow(face)
-#plt.show()
+plt.imshow(to_plot)
+plt.show()
