@@ -26,7 +26,7 @@ def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
     print(r.sum())
     return inv_cdf(r)
 
-n_samples = 4000   # nbr of sample to generate
+n_samples = 40000   # nbr of sample to generate
 n_bins = 1000
 samples = inverse_transform_sampling(smooth_raccoon, n_bins, n_samples)
 
@@ -67,9 +67,34 @@ def parzen_window_func(x_vec, h=1):
             return 0
     return 1
 
-def parzen_estimation(x, h):
+def parzen_estimation(x_samples, point_x, h, d, window_func, kernel_func):
+    """
+    Implementation of a parzen-window estimation.
+
+    Keyword arguments:
+        x_samples: A 'n x d'-dimensional numpy array, where each sample
+            is stored in a separate row. (= training sample)
+        point_x: point x for density estimation, 'd x 1'-dimensional numpy array
+        h: window width
+        d: dimensions
+        window_func: a Parzen window function (phi)
+        kernel_function: A hypercube or Gaussian kernel functions
+
+    Returns the density estimate p(x).
+
+    """
+    k_n = 0
+    for row in x_samples:
+        x_i = kernel_func(h=h, x=point_x, x_i=row[:,np.newaxis])
+        k_n += window_func(x_i, h=h)
+    return (k_n / len(x_samples)) / (h**d)
+
+
+### Cross-validation to be done:
+
+def parzen_estimation_CrossValidation(x, h):
     '''
-    Implement the Parzen window estimator for an hypercube Window
+
     '''
     pass
 
