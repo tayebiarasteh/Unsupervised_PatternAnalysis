@@ -36,10 +36,12 @@ def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
         sampled_raccoon += np.where(smooth_raccoon==sample , smooth_raccoon, 0)
     return sampled_raccoon
 
-n_samples = 1   # nbr of sample to generate
+n_samples = 10000   # nbr of sample to generate
 n_bins = 1000
 
 sampled_raccoon = inverse_transform_sampling(smooth_raccoon, n_bins, n_samples)
+print('inverse_transform_sampling_done')
+
 
 ####### Parzen Window Estimation
 
@@ -64,22 +66,42 @@ def parzen_estimation(x_samples, h):
     Implementation of a parzen-window estimator.
     """
     x_new = copy.deepcopy(x_samples)
+    for i in range(0, x_samples.shape[0]):
+        if x_samples[i][0]==0:     #not the right color
+            x_new[i][0] = int(hypercube_kernel(x_samples, x_samples[i], h))
+            print(x_new[i][0])
+    return x_new
+
+'''
+def parzen_estimation(x_samples, h):
+    """
+    Implementation of a parzen-window estimator.
+    """
+    x_new = copy.deepcopy(x_samples)
+    for i in range(0, x_samples[0]):
+        for j in range(0, x_samples[1]):
+            pass
+
+
     for i in range(0, x_samples):
         if x_samples[i][0]==0:     #not the right color
             x_new[i] = int(hypercube_kernel(x_samples, x_samples[i], h))
             print(x_new[i])
     return x_new
+    '''
 
 
-def reformat_raccoon(old, new):
-    new = np.empty(0)
-    for i in range(0, old):
-        for j in range(0, old[i]):
-            new.append(new, [[i,j,old[i][j]]])
+def reformat_raccoon(old):
+    new = np.zeros((old.shape[0]*old.shape[1], 3))
+    for i in range(0, old.shape[0]):
+        for j in range(0, old.shape[1]):
+            new[i*old.shape[0]+j] = np.array([old[i][j],i,j])
+            #print(new)
     return new
 
-
-print(reformat_raccoon(sampled_raccoon))
+print(sampled_raccoon.shape)
+#print(reformat_raccoon(sampled_raccoon).shape, ' and ', sampled_raccoon.shape[0]*sampled_raccoon.shape[1])
+sampled_raccoon = parzen_estimation(reformat_raccoon(sampled_raccoon), 1)
 
 
 ### Cross-validation:
@@ -102,4 +124,4 @@ def parzen_estimation_CrossValidation(x, h):
 to_plot = sampled_raccoon
 plt.gray()
 plt.imshow(to_plot)
-plt.show()
+#plt.show()
