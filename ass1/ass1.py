@@ -67,10 +67,19 @@ def parzen_estimation(x_samples, h):
     for i in range(0, x_samples):
         if x_samples[i][0]==0:     #not the right color
             x_new[i] = int(hypercube_kernel(x_samples, x_samples[i], h))
-            print(x_new)
+            print(x_new[i])
     return x_new
 
 
+def reformat_raccoon(old, new):
+    new = np.empty(0)
+    for i in range(0, old):
+        for j in range(0, old[i]):
+            new.append(new, [[i,j,old[i][j]]])
+    return new
+
+
+print(reformat_raccoon(sampled_raccoon))
 
 
 ### Cross-validation:
