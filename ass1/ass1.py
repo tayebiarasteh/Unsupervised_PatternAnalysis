@@ -56,7 +56,7 @@ def hypercube_kernel(x_samples, x, h):
                     is_in = 0
             if is_in:
                 nbr += 1
-    return (k_n / len(x_samples)) / (h**x_samples.shape[1])
+    return (nbr / len(x_samples)) / (h**x_samples.shape[1])
 
 
 def parzen_estimation(x_samples, h):
