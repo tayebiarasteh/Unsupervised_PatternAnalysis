@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.ndimage as nd
 import numpy as np
 import scipy.interpolate as interpolate
-
+import copy
 
 
 raccoon = scipy.misc.face(gray=True)
@@ -17,6 +17,9 @@ smooth_raccoon = nd.gaussian_filter(raccoon, sigma=3)
 ##### inverse transformation sampling
 
 def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
+    '''
+    perform inverse transform sampling with cumulative density function
+    '''
     hist, bin_edges = np.histogram(data, bins=n_bins, density=True) # generate histogram
     cum_values = np.zeros(bin_edges.shape)  # future CDF
     cum_values[1:] = np.cumsum(hist*np.diff(bin_edges)) # generate CDF
@@ -24,73 +27,53 @@ def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
     inv_cdf = interpolate.interp1d(cum_values, bin_edges)   # inverse of the CDF
     r = np.random.rand(n_samples)   # random samples from uniform distribution
     print(r.sum())
-    return inv_cdf(r)
+    samples = inv_cdf(r)
+    sampled_raccoon = np.zeros(smooth_raccoon.shape)
+    ###### draw samples in raccoon image
+    for sample in samples.astype(int):
+    #print(samples.astype(int))
+    #print(smooth_raccoon)
+        sampled_raccoon += np.where(smooth_raccoon==sample , smooth_raccoon, 0)
+    return sampled_raccoon
 
-n_samples = 40000   # nbr of sample to generate
+n_samples = 1   # nbr of sample to generate
 n_bins = 1000
-samples = inverse_transform_sampling(smooth_raccoon, n_bins, n_samples)
 
-###### draw samples in raccoon image
-sampled_raccoon = np.zeros(smooth_raccoon.shape)
-
-for sample in samples.astype(int):
-#print(samples.astype(int))
-#print(smooth_raccoon)
-    sampled_raccoon += np.where(smooth_raccoon==sample , smooth_raccoon, 0)
+sampled_raccoon = inverse_transform_sampling(smooth_raccoon, n_bins, n_samples)
 
 ####### Parzen Window Estimation
 
-def hypercube_kernel(h, x, x_i):
+def hypercube_kernel(x_samples, x, h):
     """
-    Implementation of a hypercube kernel for Parzen-window estimation.
-
-    Keyword arguments:
-        h: window width
-        x: point x for density estimation, 'd x 1'-dimensional numpy array
-        x_i: point from training sample, 'd x 1'-dimensional numpy array
-
-    Returns a 'd x 1'-dimensional numpy array as input for a window function.
-
+    Implementation of a parzen-window hypercube kernel.
     """
-    assert (x.shape == x_i.shape), 'vectors x and x_i must have the same dimensions'
-    x_vec = (x - x_i) / (h)
-    return x_vec
+    nbr = 0
+    for x_i in x_samples:
+        if x_i[0]!=0:   #not the right color
+            is_in = 1
+            for coord in range(0, x_i.shape[0]):
+                if (np.abs(x_i[coord] - x[coord]) >= (h/2)):
+                    is_in = 0
+            if is_in:
+                nbr += 1
+    return (k_n / len(x_samples)) / (h**x_samples.shape[1])
 
-def parzen_window_func(x_vec, h=1):
+
+def parzen_estimation(x_samples, h):
     """
-    Implementation of the window function. Returns 1 if 'd x 1'-sample vector
-    lies within inside the window, 0 otherwise.
-
+    Implementation of a parzen-window estimator.
     """
-    for row in x_vec:
-        if np.abs(row) > (1/2):
-            return 0
-    return 1
-
-def parzen_estimation(x_samples, point_x, h, d, window_func, kernel_func):
-    """
-    Implementation of a parzen-window estimation.
-
-    Keyword arguments:
-        x_samples: A 'n x d'-dimensional numpy array, where each sample
-            is stored in a separate row. (= training sample)
-        point_x: point x for density estimation, 'd x 1'-dimensional numpy array
-        h: window width
-        d: dimensions
-        window_func: a Parzen window function (phi)
-        kernel_function: A hypercube or Gaussian kernel functions
-
-    Returns the density estimate p(x).
-
-    """
-    k_n = 0
-    for row in x_samples:
-        x_i = kernel_func(h=h, x=point_x, x_i=row[:,np.newaxis])
-        k_n += window_func(x_i, h=h)
-    return (k_n / len(x_samples)) / (h**d)
+    x_new = copy.deepcopy(x_samples)
+    for i in range(0, x_samples):
+        if x_samples[i][0]==0:     #not the right color
+            x_new[i] = int(hypercube_kernel(x_samples, x_samples[i], h))
+            print(x_new)
+    return x_new
 
 
-### Cross-validation to be done:
+
+
+### Cross-validation:
 
 def parzen_estimation_CrossValidation(x, h):
     '''
