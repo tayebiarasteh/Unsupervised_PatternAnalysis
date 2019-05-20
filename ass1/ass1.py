@@ -4,6 +4,7 @@ import scipy.ndimage as nd
 import numpy as np
 import scipy.interpolate as interpolate
 import copy
+from sklearn.model_selection import train_test_split
 
 
 raccoon = scipy.misc.face(gray=True)
@@ -58,6 +59,7 @@ def hypercube_kernel(x_samples, x, h):
                     is_in = 0
             if is_in:
                 nbr += 1
+        #print('saotnhq', nbr)
     return (nbr / len(x_samples)) / (h**x_samples.shape[1])
 
 
@@ -68,7 +70,7 @@ def parzen_estimation(x_samples, h):
     x_new = copy.deepcopy(x_samples)
     for i in range(0, x_samples.shape[0]):
         if x_samples[i][0]==0:     #not the right color
-            x_new[i][0] = int(hypercube_kernel(x_samples, x_samples[i], h))
+            x_new[i][0] = hypercube_kernel(x_samples, x_samples[i], h)
             print(x_new[i][0])
     return x_new
 
@@ -101,17 +103,16 @@ def reformat_raccoon(old):
 
 print(sampled_raccoon.shape)
 #print(reformat_raccoon(sampled_raccoon).shape, ' and ', sampled_raccoon.shape[0]*sampled_raccoon.shape[1])
-sampled_raccoon = parzen_estimation(reformat_raccoon(sampled_raccoon), 1)
+sampled_raccoon = parzen_estimation(reformat_raccoon(sampled_raccoon), 500)
 
 
 ### Cross-validation:
 
 def parzen_estimation_CrossValidation(x, h):
     '''
-
+    cross validation
     '''
-    pass
-
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 
 
