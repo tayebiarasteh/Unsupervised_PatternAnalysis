@@ -5,7 +5,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 import copy
 import scipy.signal as sig
-import sklearn.model_selection as skselect
+#import sklearn.model_selection as skselect
 
 
 raccoon = scipy.misc.face(gray=True)
@@ -52,7 +52,7 @@ plt.imshow(to_plot)
 plt.show()
 
 ########## Parzen window and MLE
-
+'''
 h_values = [5,10,15,20,25,30]
 all_cost = []
 #for ind, sample in enumerate(new_sampled_cdf):
@@ -80,3 +80,4 @@ for h in h_values:
 
 besth = np.argmax(all_cost)
 print(best)
+'''
