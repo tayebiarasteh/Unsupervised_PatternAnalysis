@@ -8,7 +8,7 @@ SCATTER_PLOT = 1
 MULTI_Y_LINE_PLOT = 2
 
 # Data -----------------------------------------------------------------
-def gaussian_2D(mu, sigma, nbr_pts=50):
+def gaussian_2D(mu, sigma, nbr_pts=10):
 
     return np.random.multivariate_normal(mu, sigma, nbr_pts)
 
@@ -182,11 +182,11 @@ if __name__ == "__main__":
     mu = [40, 50]
     sigma = [[25,0], [0,20]]
     gssn_2 = gaussian_2D(mu, sigma)
-    mu = [30, 0]
+    mu = [40, 0]
     sigma = [[40, 0], [0, 40]]
     gssn_3 = gaussian_2D(mu, sigma)
     mu = [10, 40]
-    sigma = [[10,0], [0,35]]
+    sigma = [[0,0], [0,120]]
     gssn_4 = gaussian_2D(mu, sigma)
 
     gssns = [gssn_1, gssn_2, gssn_3, gssn_4]
