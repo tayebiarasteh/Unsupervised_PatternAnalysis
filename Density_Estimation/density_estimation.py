@@ -16,15 +16,13 @@ from sklearn.model_selection import train_test_split
 raccoon = scipy.misc.face(gray=True)
 
 ####### gaussian filter
-
 smooth_raccoon = nd.gaussian_filter(raccoon, sigma=3)
 
 
 ##### inverse transformation sampling
-
 def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
     '''
-    perform inverse transform sampling with cumulative density function
+    performs inverse transform sampling with cumulative density function
     '''
     hist, bin_edges = np.histogram(data, bins=n_bins, density=True) # generate histogram
     cum_values = np.zeros(bin_edges.shape)  # future CDF
@@ -37,8 +35,6 @@ def inverse_transform_sampling(data, n_bins=1000, n_samples=1000):
     sampled_raccoon = np.zeros(smooth_raccoon.shape)
     ###### draw samples in raccoon image
     for sample in samples.astype(int):
-    #print(samples.astype(int))
-    #print(smooth_raccoon)
         sampled_raccoon += np.where(smooth_raccoon==sample , smooth_raccoon, 0)
     return sampled_raccoon
 
@@ -78,31 +74,12 @@ def parzen_estimation(x_samples, h):
             print(x_new[i][0])
     return x_new
 
-'''
-def parzen_estimation(x_samples, h):
-    """
-    Implementation of a parzen-window estimator.
-    """
-    x_new = copy.deepcopy(x_samples)
-    for i in range(0, x_samples[0]):
-        for j in range(0, x_samples[1]):
-            pass
-
-
-    for i in range(0, x_samples):
-        if x_samples[i][0]==0:     #not the right color
-            x_new[i] = int(hypercube_kernel(x_samples, x_samples[i], h))
-            print(x_new[i])
-    return x_new
-    '''
-
 
 def reformat_raccoon(old):
     new = np.zeros((old.shape[0]*old.shape[1], 3))
     for i in range(0, old.shape[0]):
         for j in range(0, old.shape[1]):
             new[i*old.shape[0]+j] = np.array([old[i][j],i,j])
-            #print(new)
     return new
 
 print(sampled_raccoon.shape)
@@ -115,7 +92,7 @@ def parzen_estimation_CrossValidation(x, h):
     '''
     cross validation
     '''
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    X_train, X_test, y_train, y_test = train_test_split(x, h, test_size=0.3)
 
 
 
