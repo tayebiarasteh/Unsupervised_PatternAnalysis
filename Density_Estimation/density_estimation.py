@@ -1,3 +1,9 @@
+'''
+@authors:
+Sacha Medaer <sacha.medaer@fau.de>
+Soroosh Tayebi Arasteh <soroosh.fau.de>
+'''
+
 import scipy.misc
 import matplotlib.pyplot as plt
 import scipy.ndimage as nd
@@ -12,7 +18,6 @@ raccoon = scipy.misc.face(gray=True)
 ####### gaussian filter
 
 smooth_raccoon = nd.gaussian_filter(raccoon, sigma=3)
-#print(y.sum())
 
 
 ##### inverse transformation sampling
@@ -59,7 +64,6 @@ def hypercube_kernel(x_samples, x, h):
                     is_in = 0
             if is_in:
                 nbr += 1
-        #print('saotnhq', nbr)
     return (nbr / len(x_samples)) / (h**x_samples.shape[1])
 
 
@@ -106,7 +110,6 @@ print(sampled_raccoon.shape)
 sampled_raccoon = parzen_estimation(reformat_raccoon(sampled_raccoon), 500)
 
 
-### Cross-validation:
 
 def parzen_estimation_CrossValidation(x, h):
     '''

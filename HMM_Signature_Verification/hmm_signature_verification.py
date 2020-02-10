@@ -1,3 +1,9 @@
+'''
+@authors:
+Sacha Medaer <sacha.medaer@fau.de>
+Soroosh Tayebi Arasteh <soroosh.fau.de>
+'''
+
 import numpy as np
 from hmmlearn import hmm
 import csv
