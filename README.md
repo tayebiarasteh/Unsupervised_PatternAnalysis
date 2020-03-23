@@ -33,4 +33,4 @@ The main goal of the project is to illustrate different algorithms and to try th
 
 ## Acknowledgment
 
-Part of this `README` file is written based on the Angel Villar's project.
+Part of this `README` file is written based on the [Angel Villar's](https://github.com/angelvillar96) project.
